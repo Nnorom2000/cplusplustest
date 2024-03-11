@@ -1,0 +1,86 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <iomanip>
+
+using namespace std;
+
+struct Product {
+    char ProductName[100];
+    float UnitPrice;
+    int Quantity;
+    float TotalPrice;
+};
+
+struct Shop {
+    char ShopName[100];
+    char Address[100];
+};
+
+struct Customer {
+    char CustomerName[100];
+    char PhoneNumber[15];
+};
+
+struct Person {
+    Shop shop;
+    Customer customer;
+    Product product;
+};
+
+void FillShoppingInfo(Person* person) {
+    cout << "Enter Shop Name: ";
+    cin.getline(person->shop.ShopName, 100);
+
+    cout << "Enter Shop Address: ";
+    cin.getline(person->shop.Address, 100);
+
+    cout << "Enter Customer Name: ";
+    cin.getline(person->customer.CustomerName, 100);
+
+    cout << "Enter Customer Phone Number: ";
+    cin.getline(person->customer.PhoneNumber, 15);
+
+    cout << "Enter Product Name: ";
+    cin.getline(person->product.ProductName, 100);
+
+    cout << "Enter Unit Price: ";
+    cin >> person->product.UnitPrice;
+
+    cout << "Enter Quantity: ";
+    cin >> person->product.Quantity;
+
+    person->product.TotalPrice = person->product.UnitPrice * person->product.Quantity;
+}
+
+void WriteReceipt(Person person) {
+    ofstream outFile("receipt.txt");
+    if (outFile.is_open()) {
+        outFile << "******************************************************" << endl;
+        outFile << setw(30) << endl;
+        outFile << person.shop.ShopName << endl;
+        outFile << setw(30) << endl;
+        outFile << person.shop.Address << endl;
+        outFile << "Customer " << person.customer.CustomerName << endl;
+        outFile << "Phone Number " << person.customer.PhoneNumber << endl;
+        outFile << "Your Order" << endl;
+        outFile << "Product Name\tUnitPrice\tQuantity Ordered" << endl;
+        outFile << person.product.ProductName << "\t\t" << person.product.UnitPrice << "\t\t" << person.product.Quantity << endl;
+        outFile << "*******" << endl;
+        outFile << "Total Price\t" << person.product.TotalPrice << endl;
+        outFile << "*******" << endl;
+        outFile << "Thanks for your patronage" << endl;
+        outFile << "******************************************************" << endl;
+        outFile.close();
+        cout << "Receipt has been written to receipt.txt" << endl;
+    }
+    else {
+        cout << "Unable to open file for writing." << endl;
+    }
+}
+int main() {
+    Person person;
+    FillShoppingInfo(&person);
+    WriteReceipt(person);
+    return 0;
+}
