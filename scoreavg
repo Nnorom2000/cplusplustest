@@ -1,0 +1,95 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+const int NUM_STUDENTS = 3;
+const int MAX_NAME_LENGTH = 50;
+
+struct Student {
+    char Name[MAX_NAME_LENGTH];
+    int Score1;
+    int Score2;
+    int Score3;
+    int Score4;
+    float AvgScore;
+};
+
+void ReadStudentInfo(Student students[]) {
+    ifstream inputFile("StudentInfo.txt");
+    if (!inputFile) {
+        cerr << "Error opening input file." << endl;
+        exit(1);
+    }
+    for (int i = 0; i < NUM_STUDENTS; ++i) {
+        char ch;
+        int spaceCount = 0;
+        int j = 0;
+        while (inputFile.get(ch) && ch != '\n') {
+            if (ch == ' ') {
+                spaceCount++;
+                if (spaceCount == 2) {
+                    students[i].Name[j] = '\0'; // Terminate the string after the second space
+                    break;
+                }
+            }
+            students[i].Name[j++] = ch;
+        }
+        inputFile >> students[i].Score1 >> students[i].Score2 >> students[i].Score3 >> students[i].Score4;
+        /inputFile.ignore(numeric_limits<streamsize>::max(), '\n'); // skip to the next line/
+        inputFile.ignore();
+    }
+
+    inputFile.close();
+}
+
+void CalcAverage(Student students[]) {
+    for (int i = 0; i < NUM_STUDENTS; ++i) {
+        students[i].AvgScore = (students[i].Score1 + students[i].Score2 + students[i].Score3 + students[i].Score4) / 4.0f;
+    }
+}
+
+void WriteAvgScore(Student students[]) {
+    ofstream outputFile("AvgScoreFile.txt");
+    if (!outputFile) {
+        cerr << "Error opening output file." << endl;
+        exit(1);
+    }
+
+    for (int i = 0; i < NUM_STUDENTS; ++i) {
+        outputFile << "Name: " << students[i].Name << " Average Score: " << students[i].AvgScore << endl;
+    }
+
+    outputFile.close();
+}
+
+int main() {
+    Student students[NUM_STUDENTS];
+
+    ReadStudentInfo(students);
+    CalcAverage(students);
+    cout << "Student information read from file:" << endl;
+    for (int i = 0; i < NUM_STUDENTS; ++i) {
+        cout << "Name: " << students[i].Name << endl;
+        cout << "Scores: " << students[i].Score1 << " " << students[i].Score2 << " " << students[i].Score3 << " " << students[i].Score4 << endl;
+        cout << "Average Score: " << students[i].AvgScore << endl;
+        cout << endl;
+    }
+    WriteAvgScore(students);
+
+    cout << "Average scores have been written to AvgScoreFile.txt" << endl;
+
+    return 0;
+}
+
+
+/*
+
+
+Alao Adeniyi 70 85 75 60
+Bakare Chukwu 80 72 67 65
+Trey Song 55 49 85 77
+
+
+*/
